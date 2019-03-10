@@ -16,6 +16,8 @@
 #define ENCODERS 40 // Set quantity of continuous rotary knobs (0..40)
 #define SWITCHES 40 // Set quantity of on / off switches (0..40)
 #define ADC_BITS 10 // Set analogue to digital conversion resolution (max 12 bits)
+#define ROT_THRESHOLD 10 // Threshold at which to change rotational scaling
+#define ROT_FAST_SCALE 10 // Factor to muliptly rotational change rate for fast scrolling
 
 // Constants
 static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of valid encoder states
@@ -46,6 +48,7 @@ struct Controller
     uint8_t count = 0; // Used to filter controller
     uint8_t code = 0; // Used to filter encoder controller
     uint8_t type; // Controller type (see CONTROLLER_TYPE)
+    uint32_t time; // Time of last update
     int getValue() // Get the controller value with any required processing
     {
         int nValue = value;
@@ -193,14 +196,17 @@ void readEncoder()
                     g_anControllers[ENCODER_START + nEncoder].count <<= 4;
                     g_anControllers[ENCODER_START + nEncoder].count |= g_anControllers[ENCODER_START + nEncoder].code;
                     if(g_anControllers[ENCODER_START + nEncoder].count == 0xd4)
-                    {
-                        --g_anControllers[ENCODER_START + nEncoder].value;
-                        g_anControllers[ENCODER_START + nEncoder].code = 0;
-                        g_anControllers[ENCODER_START + nEncoder].dirty = true;
-                    }
+                        nDir = -1;
                     else if(g_anControllers[ENCODER_START + nEncoder].count == 0x17)
+                        nDir = +1;
+                    if(nDir)
                     {
-                        ++g_anControllers[ENCODER_START + nEncoder].value;
+                        uint32_t lNow = millis();
+                        if(lNow >= g_anControllers[ENCODER_START + nEncoder].time + ROT_THRESHOLD)
+                            g_anControllers[ENCODER_START + nEncoder].value += nDir; //Slow rotation
+                        else
+                            g_anControllers[ENCODER_START + nEncoder].value += nDir * ROT_FAST_SCALE; //Fast rotation
+                        g_anControllers[ENCODER_START + nEncoder].time = lNow;
                         g_anControllers[ENCODER_START + nEncoder].code = 0;
                         g_anControllers[ENCODER_START + nEncoder].dirty = true;
                     }
