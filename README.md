@@ -1,13 +1,13 @@
 # I2C-Hardware-Controller
 A hardware controller providing rotary encoders, switches and potentiometer values via I2C
 
-This project provides an interface to other applications via 40 continuous rotary encoders, 40 two poisition switches and 64 end-stopped variable resistors (potentiometers). The link to the host device is via I2C which requires a clock and data signal. Power may be provided by the host as 3.3V or 5V supply plus ground. (Both devices must have a common ground.) The host may continuously poll the hardware controller (HWC) for changes or use a dedicated signal to trigger interrupts (or similar event handling routine). Several HWC may be cascaded to increase the quantity of controls as required.
+I2C Hardware Controller provides an interface to other applications via 40 continuous rotary encoders, 40 on / off switches and 64 end-stopped variable resistors (potentiometers). The link to the host device is via I2C which requires a clock and data signal. Power may be provided by the host as 3.3V or 5V supply plus ground. (Both devices must have a common ground.) The host may continuously poll the hardware controller (HWC) for changes or use a dedicated signal to trigger interrupts (or similar event handling routine). Several HWC may be cascaded to increase the quantity of controls as required.
 
 Rotary encoders provide the value of change since last read which is a postive integer for clockwise rotation and negative for counter-clockwise rotation. Slow rotation changes value by one unit whilst faster rotation changes value by ten units. It is the responsibility of the host device / application to store the absolute value calculated from the relative postion values sent by the HWC.
 
-Switches provide on / off value with 50ms debounce filtering, i.e. readings are ignored for 50ms after a switch changes position to avoid false retriggering. Rotary encoders commonly include a push switch which may be wired as a switch control or separate push buttons / toggle switches / slide switches / etc. may be attached.
+Switches provide on / off value with debounce filtering to avoid false retriggering. Rotary encoders commonly include a push switch which may be wired as a switch control or separate push buttons / toggle switches / slide switches / etc. may be attached.
 
-End-stopped variable resistance (potentiometer) controls provide a maximum of 12-bit resolution. A noise filte is applied which increases the latency and / or reduces the resolution of ADC. (Each bit reduction improves latency by one sampple period and reduces noise.) Noise is the retriggering of analogue values when there is no physical change of knob position. At 12-bit resolution this is quite common but reducing to 11-bits cleans the signal significantly. The required filter may depend on the quality of potentiometer and wiring.
+End-stopped variable resistance (potentiometer) controls provide a maximum of 12-bit resolution. A noise filte is applied which increases the latency and / or reduces the resolution of ADC. (Each bit reduction improves latency by one sampple period and reduces noise.) Noise is the retriggering of analogue values when there is no physical change of knob position. At 12-bit resolution this is quite common but reducing to 10-bits (default) cleans the signal significantly. The required filter may depend on the quality of potentiometer and wiring.
 
 Note: Switches and rotary encoders are X-Y multiplexed so cannot use a common ground, i.e. both polls of each switch and all three pins of a rotary encoder need to be connected to the HWC matrix. To simplify wiring, each rotary encoder and associated swich share a common matrix pin resulting in each rotary encoder / switch combination requiring 4 wires.
 
@@ -17,15 +17,15 @@ The core of the HWC is a STM32F103 from STMicroelectronics in the form of a Mapl
 
 The potentiometers are connected via 8 x CD4051B 8x1 analogue multiplex chips. It is possible to omit the multiplexers and use just 8 potentiometers. Unused inputs are tied to ground to avoid false trigger due to noise.
 
-The switches and rotary encoders (which are just a pair of bi-phase oriented swiches) are connected as a X-Y matrix with a 1N4148 signal diode between one switch pole and the matrix bus.
+The switches and rotary encoders (which are just a pair of bi-phase oriented swiches) are connected as a X-Y matrix with a 1N4148 signal diode between one switch pole and the matrix bus. Fewer switches or rotary encoders may be connected as required.
 
 The HWC acts as a I2C slave with I2C address configurable at compile time. (This may change in future to allow user configuration.) Connections to the master device is via 3 signal wires and 2 power wires thus:
 
         ---------------------                      -----------------------
-        |                   |-------3.3/5V---------|                     |
-        | Master I2C device |-------I2C CLK--------| Hardware Controller |
-        | e.g. Raspberry Pi |-------I2C SDA--------|                     |
-        |                   |---------INT----------|                     |
+        |                   |-------3.3/5V-------->|                     |
+        | Master I2C device |-------I2C CLK------->| Hardware Controller |
+        | e.g. Raspberry Pi |<------I2C SDA------->|                     |
+        |                   |<--------INT----------|                     |
         |                   |---------0V-----------|                     |
         ---------------------                      -----------------------
 
@@ -44,3 +44,6 @@ while(GPI_INT == 0) {
 }
 ```
 
+Data values for potentiometers is a postive integer range 0..(2^n - 1) where n=number of bits.
+Data values for switches is 0 for off (open) and 1 for on (closed).
+Data values for rotaty encoders is -1 for single anticlockwise rotation detent and +1 for single clockwise rotation detent. If rotated faster than queried by I2C master then the relative offset increases accordingly.
