@@ -23,6 +23,8 @@ static const uint8_t SwitchPinsY[] = {26,27,28,29,30,31,12,13,14}; // Table of G
 static const unsigned int ADC_MASK_BITS = 12 - ADC_BITS; // Quantity of bits to mask ADC
 static const int ADC_FILTER_SAMPLES = 32 >> ADC_MASK_BITS; // Quantity of samples to filter ADC
 
+uint8_t g_nLastRead = 0; // The index of the controller last read
+
 enum CONTROLLER_TYPE
 {
     CONTROLLER_TYPE_ADC,
@@ -162,12 +164,22 @@ void loop()
     getDirty(); // Check for any value changes since last read or processing cycle
 }
 
-/** @brief  Get the first controller who's values has changed since last I2C request
+/** @brief  Get the next controller who's values has changed since last I2C request
  *  @retval uint8_t Index of controller (1 based) or 0 for none
+ *  @note   Avoids one controller hogging bus by starting scan after last read controller
  */
 uint8_t getDirty()
 {
-    for(uint8_t i = 0; i < POTENTIOMETERS + ENCODERS + SWITCHES; ++i)
+    // Iterate through all controllers looking for changed, starting at controller after last read then wrapping round
+    for(uint8_t i = g_nLastRead; i < POTENTIOMETERS + ENCODERS + SWITCHES; ++i)
+    {
+        if(g_anControllers[i].dirty)
+        {
+            digitalWrite(InterruptPin, LOW);
+            return(i + 1);
+        }
+    }
+    for(uint8_t i = 0; i < g_nLastRead; ++i)
     {
         if(g_anControllers[i].dirty)
         {
@@ -219,6 +231,7 @@ void onI2Creceive(int nBytes)
     if(nBytes < 0)
         return;
     g_nI2Cregister = Wire.read();
+    g_nLastRead = g_nI2Cregister;
     while(Wire.available())
         Wire.read(); // Clear buffer as only expecting single byte
 }
