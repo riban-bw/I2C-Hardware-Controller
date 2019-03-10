@@ -162,11 +162,10 @@ void readSwitch()
     }
 }
 
-/** @brief  Read rotary encoder
+/** @brief  Read rotary encoders
 */
 void readEncoder()
 {
-    //!@todo Implement variable rotation rate scaling for encoders
     int8_t nDir = 0; // Direction of rotation [-1, 0, +1]
     for(uint8_t nOutput = 0; nOutput < sizeof(MatrixOutputPins); ++nOutput)
         digitalWrite(MatrixOutputPins[nOutput], LOW);
