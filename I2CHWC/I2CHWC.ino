@@ -11,16 +11,24 @@
 
 #include <Wire_slave.h>
 
-#define I2CADDR 8 // Set HWC I2C address (must be unique on I2C bus)
-#define POTENTIOMETERS 64 // Set quantity of end-stopped knobs and faders (0..64)
-#define ENCODERS 40 // Set quantity of continuous rotary knobs (0..40)
-#define SWITCHES 40 // Set quantity of on / off switches (0..40)
-#define ADC_BITS 10 // Set analogue to digital conversion resolution (max 12 bits)
-#define ROT_THRESHOLD 10 // Threshold at which to change rotational scaling
-#define ROT_FAST_SCALE 10 // Factor to muliptly rotational change rate for fast scrolling
+// ***Adjust these values to suit hardware installation***
+#define I2CADDR       0x08 // Set HWC I2C address (must be unique on I2C bus)
+#define POTS            64 // Set quantity of end-stopped knobs and faders (0..MAX_POTS)
+#define SWITCHES        40 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
+#define ENCODERS        40 // Set quantity of on / off switches (0..MAX_ENCODERS)
+#define ADC_BITS        10 // Set analogue to digital conversion resolution (max 12 bits)
+#define ROT_THRESHOLD   10 // Threshold at which to change rotational scaling
+#define ROT_FAST_SCALE  10 // Factor to muliptly rotational change rate for fast scrolling
+#define DEBOUNCE_TIME   50 // Time in ms to ignore switch value change after previous change
+
+// Do not adjust these:
+#define MAX_POTS        64 // Maximum quantity of potentiometer controls
+#define MAX_SWITCHES    40 // Maximum quantity of on / off switch controls
+#define MAX_ENCODERS    40 // Maximum quantity of rotary encoder controls
 
 // Constants
 static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of valid encoder states
+//!@todo Optimise GPI allocation for PCB layout
 static const uint8_t AnaloguePins[] = {4,5,6,7,8,9,10,11}; // Table of ADC input pins
 static const uint8_t InterruptPin = 2; // GPI pin used to indicate values have changed
 static const uint8_t MatrixOutputPins[] = {3,17,18,19,20,21,22,23,24,25}; // Table of GPI matrix output pins
@@ -28,14 +36,15 @@ static const uint8_t SwitchInputPins[] = {26,27,28,29}; // Table of GPI matrix i
 static const uint8_t EncoderInputPins[] = {30,31,32,14,13,12,0,1}; // Table of GPI matrix input pins for encoders
 static const unsigned int ADC_MASK_BITS = 12 - ADC_BITS; // Quantity of bits to mask ADC
 static const int ADC_FILTER_SAMPLES = 32 >> ADC_MASK_BITS; // Quantity of samples to filter ADC
-static const uint8_t ADC_START = 0;
-static const uint8_t SWITCH_START = POTENTIOMETERS;
-static const uint8_t ENCODER_START = POTENTIOMETERS + SWITCHES;
+static const uint8_t POT_START = 0; // Offset of potentiometer controls in controller table
+static const uint8_t SWITCH_START = MAX_POTS; // Offset of on / off switch controls in controller table
+static const uint8_t ENCODER_START = MAX_POTS + MAX_SWITCHES; // Offset of rotary encoder controls in controller table
+static const uint8_t MAX_CONTROLLERS = ENCODER_START + MAX_ENCODERS; // Maximum quantity of controllers
 
 /** Controller types */
 enum CONTROLLER_TYPE
 {
-    CONTROLLER_TYPE_ADC,
+    CONTROLLER_TYPE_POT,
     CONTROLLER_TYPE_SWITCH,
     CONTROLLER_TYPE_ENCODER
 };
@@ -48,13 +57,13 @@ struct Controller
     uint8_t count = 0; // Used to filter controller
     uint8_t code = 0; // Used to filter encoder controller
     uint8_t type; // Controller type (see CONTROLLER_TYPE)
-    uint32_t time; // Time of last update
+    uint32_t time; // Time of last update (ms since boot)
     int getValue() // Get the controller value with any required processing
     {
         int nValue = value;
         switch(type)
         {
-        case CONTROLLER_TYPE_ADC:
+        case CONTROLLER_TYPE_POT:
             nValue >>= ADC_MASK_BITS; // Returns value scaled by ADC bits
             break;
         case CONTROLLER_TYPE_ENCODER:
@@ -71,7 +80,7 @@ struct Controller
 // Global variables
 uint8_t g_nLastRead = 0; // The index of the controller last read
 int g_nI2Cregister = 0; // Address of I2C register requested by I2C master (index of controller - 1 based)
-Controller g_anControllers[POTENTIOMETERS + ENCODERS + SWITCHES]; // Array of controller objects
+Controller g_anControllers[MAX_CONTROLLERS]; // Array of controller objects
 
 void setup()
 {
@@ -92,11 +101,11 @@ void setup()
     pinMode(InterruptPin, OUTPUT);
 
     // Configure controller objects
-    for(int i = ADC_START; i < ADC_START + POTENTIOMETERS; ++i)
-        g_anControllers[i].type = CONTROLLER_TYPE_ADC;
-    for(int i = SWITCH_START; i < SWITCH_START + SWITCHES; ++i)
+    for(int i = POT_START; i < POT_START + MAX_POTS; ++i)
+        g_anControllers[i].type = CONTROLLER_TYPE_POT;
+    for(int i = SWITCH_START; i < SWITCH_START + MAX_SWITCHES; ++i)
         g_anControllers[i].type = CONTROLLER_TYPE_SWITCH;
-    for(int i = ENCODER_START; i < ENCODER_START + ENCODERS; ++i)
+    for(int i = ENCODER_START; i < ENCODER_START + MAX_ENCODERS; ++i)
         g_anControllers[i].type = CONTROLLER_TYPE_ENCODER;
 }
 
@@ -108,25 +117,26 @@ void readAdc()
     for(uint8_t nMux = 0; nMux < 8; ++nMux)
     {
         // Configure external analouge multiplexer
-        digitalWrite(MatrixOutputPins[nMux & 0x01], nMux & 0x01);
-        digitalWrite(MatrixOutputPins[nMux & 0x02], nMux & 0x02);
-        digitalWrite(MatrixOutputPins[nMux & 0x04], nMux & 0x04);
+        digitalWrite(MatrixOutputPins[0], nMux & 0x01);
+        digitalWrite(MatrixOutputPins[1], nMux & 0x02);
+        digitalWrite(MatrixOutputPins[2], nMux & 0x04);
         for(uint8_t nAdc = 0; nAdc < 8; ++nAdc)
         {
             uint8_t nPot = nMux * 8 + nAdc;
-            if(nPot >= POTENTIOMETERS)
+            if(nPot >= POTS)
                 return;
             int nAnaRead = analogRead(AnaloguePins[nAdc]);
-            if(abs(nAnaRead - g_anControllers[ADC_START + nPot].value) < (1 << ADC_MASK_BITS))
+            if(abs(nAnaRead - g_anControllers[POT_START + nPot].value) < (1 << ADC_MASK_BITS))
             {
-                ++g_anControllers[ADC_START + nPot].count = 0;
+                ++g_anControllers[POT_START + nPot].count = 0;
                 continue;
             }
-            if(++g_anControllers[ADC_START + nPot].count < ADC_FILTER_SAMPLES)
+            if(++g_anControllers[POT_START + nPot].count < ADC_FILTER_SAMPLES)
                 continue;
-            ++g_anControllers[ADC_START + nPot].count = 0;
-            g_anControllers[ADC_START + nPot].value = nAnaRead;
-            g_anControllers[ADC_START + nPot].dirty = true;
+            ++g_anControllers[POT_START + nPot].count = 0;
+            g_anControllers[POT_START + nPot].value = nAnaRead;
+            g_anControllers[POT_START + nPot].dirty = true;
+            g_anControllers[POT_START + nPot].time = millis();
         }
     }
 }
@@ -148,10 +158,12 @@ void readSwitch()
             if(nSwitch < SWITCHES)
             {
                 int nValue = digitalRead(SwitchInputPins[nX]);
-                if(nValue != g_anControllers[SWITCH_START + nSwitch].value)
+                if(nValue != g_anControllers[SWITCH_START + nSwitch].value && millis() > g_anControllers[SWITCH_START + nSwitch].time + DEBOUNCE_TIME)
                 {
+                    //  Note: Initial testing suggests that debounce is not required but it is added to handle noisy switches
                     g_anControllers[SWITCH_START + nSwitch].value = nValue;
                     g_anControllers[SWITCH_START + nSwitch].dirty = true;
+                    g_anControllers[SWITCH_START + nSwitch].time = millis();
                 }
             } else {
                 digitalWrite(MatrixOutputPins[nY], LOW);
@@ -234,7 +246,7 @@ void loop()
 uint8_t getDirty()
 {
     // Iterate through all controllers looking for changed, starting at controller after last read then wrapping round
-    for(uint8_t i = g_nLastRead; i < POTENTIOMETERS + ENCODERS + SWITCHES; ++i)
+    for(uint8_t i = g_nLastRead; i < MAX_CONTROLLERS; ++i)
     {
         if(g_anControllers[i].dirty)
         {
@@ -259,7 +271,7 @@ uint8_t getDirty()
  */
 void sendValue(uint8_t controller)
 {
-    if(controller == 0 || controller-- > POTENTIOMETERS + ENCODERS + SWITCHES)
+    if(controller == 0 || controller-- > MAX_CONTROLLERS)
         return;
     int nValue = g_anControllers[controller].getValue();
     uint8_t anValue[] = {nValue & 0xFF, nValue >> 8};
