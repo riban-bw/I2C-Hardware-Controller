@@ -20,6 +20,7 @@
 #define ROT_THRESHOLD   10 // Threshold at which to change rotational scaling
 #define ROT_FAST_SCALE  10 // Factor to muliptly rotational change rate for fast scrolling
 #define DEBOUNCE_TIME   50 // Time in ms to ignore switch value change after previous change
+#define USE_ADC_MUX      1 // Set to enable external ADC multiplexers (4051) otherwise use just 8 ADC inputs
 
 // Do not adjust these:
 #define MAX_POTS        64 // Maximum quantity of potentiometer controls
@@ -29,7 +30,7 @@
 // Constants
 static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of valid encoder states
 //!@todo Optimise GPI allocation for PCB layout
-static const uint8_t AnaloguePins[] = {4,5,6,7,8,9,10,11}; // Table of ADC input pins
+static const uint8_t AnaloguePins[] = {11,10,9,8,7,6,5,4}; // Table of ADC input pins
 static const uint8_t InterruptPin = 2; // GPI pin used to indicate values have changed
 static const uint8_t MatrixOutputPins[] = {3,17,18,19,20,21,22,23,24,25}; // Table of GPI matrix output pins
 static const uint8_t SwitchInputPins[] = {26,27,28,29}; // Table of GPI matrix input pins for switches
@@ -116,27 +117,34 @@ void readAdc()
     //Monitor analogue inputs (potentiometers)
     for(uint8_t nMux = 0; nMux < 8; ++nMux)
     {
+        #ifdef USE_ADC_MUX
         // Configure external analouge multiplexer
         digitalWrite(MatrixOutputPins[0], nMux & 0x01);
         digitalWrite(MatrixOutputPins[1], nMux & 0x02);
         digitalWrite(MatrixOutputPins[2], nMux & 0x04);
+        #endif // USE_ADC_MUX
         for(uint8_t nAdc = 0; nAdc < 8; ++nAdc)
         {
+            #ifdef USE_ADC_MUX
+            uint8_t nPot = nMux + nAdc * 8;
+            #else
             uint8_t nPot = nMux * 8 + nAdc;
-            if(nPot >= POTS)
-                return;
-            int nAnaRead = analogRead(AnaloguePins[nAdc]);
-            if(abs(nAnaRead - g_anControllers[POT_START + nPot].value) < (1 << ADC_MASK_BITS))
+            #endif // USE_ADC_MUX
+            if(nPot < POTS)
             {
+                int nAnaRead = analogRead(AnaloguePins[nAdc]);
+                if(abs(nAnaRead - g_anControllers[POT_START + nPot].value) < (1 << ADC_MASK_BITS))
+                {
+                    ++g_anControllers[POT_START + nPot].count = 0;
+                    continue;
+                }
+                if(++g_anControllers[POT_START + nPot].count < ADC_FILTER_SAMPLES)
+                    continue;
                 ++g_anControllers[POT_START + nPot].count = 0;
-                continue;
+                g_anControllers[POT_START + nPot].value = nAnaRead;
+                g_anControllers[POT_START + nPot].dirty = true;
+                g_anControllers[POT_START + nPot].time = millis();
             }
-            if(++g_anControllers[POT_START + nPot].count < ADC_FILTER_SAMPLES)
-                continue;
-            ++g_anControllers[POT_START + nPot].count = 0;
-            g_anControllers[POT_START + nPot].value = nAnaRead;
-            g_anControllers[POT_START + nPot].dirty = true;
-            g_anControllers[POT_START + nPot].time = millis();
         }
     }
 }
