@@ -13,7 +13,7 @@
 
 // ***Adjust these values to suit hardware installation***
 #define I2CADDR       0x08 // Set HWC I2C address (must be unique on I2C bus)
-#define POTS            64 // Set quantity of end-stopped knobs and faders (0..MAX_POTS)
+#define POTS            16 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
 #define SWITCHES        40 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
 #define ENCODERS        40 // Set quantity of on / off switches (0..MAX_ENCODERS)
 #define ADC_BITS        10 // Set analogue to digital conversion resolution (max 12 bits)
@@ -26,6 +26,13 @@
 #define MAX_POTS        64 // Maximum quantity of potentiometer controls
 #define MAX_SWITCHES    40 // Maximum quantity of on / off switch controls
 #define MAX_ENCODERS    40 // Maximum quantity of rotary encoder controls
+// Only support max 8 POTS if not using external ADC multiplexers
+#if USE_ADC_MUX == 0
+    #if POTS > 8
+        #undef POTS
+        #define POTS 8
+    #endif // POTS
+#endif // USE_ADC_MUX
 
 // Constants
 static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of valid encoder states
@@ -54,12 +61,12 @@ enum CONTROLLER_TYPE
 struct Controller
 {
     bool dirty = false; // True if value has changed since last I2C read
-    int value = 0; // Value
+    int16_t value = 0; // Value
     uint8_t count = 0; // Used to filter controller
     uint8_t code = 0; // Used to filter encoder controller
     uint8_t type; // Controller type (see CONTROLLER_TYPE)
     uint32_t time; // Time of last update (ms since boot)
-    int getValue() // Get the controller value with any required processing
+    int16_t getValue() // Get the controller value with any required processing
     {
         int nValue = value;
         switch(type)
@@ -91,13 +98,13 @@ void setup()
     Wire.onReceive(onI2Creceive);
 
     // Configure GPI pins
-    for(int i = 0; i < sizeof(AnaloguePins); ++i)
+    for(uint8_t i = 0; i < sizeof(AnaloguePins); ++i)
         pinMode(AnaloguePins[i], INPUT_ANALOG);
-    for(int i = 0; i < sizeof(MatrixOutputPins); ++i)
+    for(uint8_t i = 0; i < sizeof(MatrixOutputPins); ++i)
         pinMode(MatrixOutputPins[i], OUTPUT);
-    for(int i = 0; i < sizeof(SwitchInputPins); ++i)
+    for(uint8_t i = 0; i < sizeof(SwitchInputPins); ++i)
         pinMode(SwitchInputPins[i], INPUT_PULLDOWN);
-    for(int i = 0; i < sizeof(EncoderInputPins); ++i)
+    for(uint8_t i = 0; i < sizeof(EncoderInputPins); ++i)
         pinMode(EncoderInputPins[i], INPUT_PULLDOWN);
     pinMode(InterruptPin, OUTPUT);
 
@@ -117,7 +124,7 @@ void readAdc()
     //Monitor analogue inputs (potentiometers)
     for(uint8_t nMux = 0; nMux < 8; ++nMux)
     {
-        #ifdef USE_ADC_MUX
+        #if USE_ADC_MUX == 1
         // Configure external analouge multiplexer
         digitalWrite(MatrixOutputPins[0], nMux & 0x01);
         digitalWrite(MatrixOutputPins[1], nMux & 0x02);
@@ -125,7 +132,7 @@ void readAdc()
         #endif // USE_ADC_MUX
         for(uint8_t nAdc = 0; nAdc < 8; ++nAdc)
         {
-            #ifdef USE_ADC_MUX
+            #if USE_ADC_MUX == 1
             uint8_t nPot = nMux + nAdc * 8;
             #else
             uint8_t nPot = nMux * 8 + nAdc;
@@ -281,10 +288,9 @@ void sendValue(uint8_t controller)
 {
     if(controller == 0 || controller-- > MAX_CONTROLLERS)
         return;
-    int nValue = g_anControllers[controller].getValue();
-    uint8_t anValue[] = {nValue & 0xFF, nValue >> 8};
+    int16_t nValue = g_anControllers[controller].getValue();
     Wire.flush();
-    Wire.write(anValue, 2);
+    Wire.write(&nValue, 2);
     g_anControllers[controller].dirty = false;
     getDirty(); // Update dirty status incase this was last changed controller
 }
