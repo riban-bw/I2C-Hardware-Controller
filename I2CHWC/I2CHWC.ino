@@ -14,8 +14,8 @@
 // ***Adjust these values to suit hardware installation***
 #define I2CADDR       0x08 // Set HWC I2C address (must be unique on I2C bus)
 #define POTS            16 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
-#define SWITCHES        40 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
-#define ENCODERS        40 // Set quantity of on / off switches (0..MAX_ENCODERS)
+#define SWITCHES        60 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
+#define ENCODERS        30 // Set quantity of on / off switches (0..MAX_ENCODERS)
 #define ADC_BITS        10 // Set analogue to digital conversion resolution (max 12 bits)
 #define ROT_THRESHOLD   10 // Threshold at which to change rotational scaling
 #define ROT_FAST_SCALE  10 // Factor to muliptly rotational change rate for fast scrolling
@@ -24,8 +24,8 @@
 
 // Do not adjust these:
 #define MAX_POTS        64 // Maximum quantity of potentiometer controls
-#define MAX_SWITCHES    40 // Maximum quantity of on / off switch controls
-#define MAX_ENCODERS    40 // Maximum quantity of rotary encoder controls
+#define MAX_SWITCHES    60 // Maximum quantity of on / off switch controls
+#define MAX_ENCODERS    30 // Maximum quantity of rotary encoder controls
 // Only support max 8 POTS if not using external ADC multiplexers
 #if USE_ADC_MUX == 0
     #if POTS > 8
@@ -34,14 +34,16 @@
     #endif // POTS
 #endif // USE_ADC_MUX
 
+//  STM32 GPI15 = I2C SDA, GPI16 = I2 CLK, USB D+ = 23, USB D- = 24
+
 // Constants
 static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of valid encoder states
 //!@todo Optimise GPI allocation for PCB layout
 static const uint8_t AnaloguePins[] = {11,10,9,8,7,6,5,4}; // Table of ADC input pins
-static const uint8_t InterruptPin = 2; // GPI pin used to indicate values have changed
-static const uint8_t MatrixOutputPins[] = {3,17,18,19,20,21,22,23,24,25}; // Table of GPI matrix output pins
-static const uint8_t SwitchInputPins[] = {26,27,28,29}; // Table of GPI matrix input pins for switches
-static const uint8_t EncoderInputPins[] = {30,31,32,14,13,12,0,1}; // Table of GPI matrix input pins for encoders
+static const uint8_t InterruptPin = 32; // GPI pin used to indicate values have changed
+static const uint8_t MatrixOutputPins[] = {17,18,19,20,21,22,23,24,25,26}; // Table of GPI matrix output pins
+static const uint8_t SwitchInputPins[] = {27,28,29,30,31,3}; // Table of GPI matrix input pins for switches
+static const uint8_t EncoderInputPins[] = {0,1,2,12,13,14}; // Table of GPI matrix input pins for encoders
 static const unsigned int ADC_MASK_BITS = 12 - ADC_BITS; // Quantity of bits to mask ADC
 static const int ADC_FILTER_SAMPLES = 32 >> ADC_MASK_BITS; // Quantity of samples to filter ADC
 static const uint8_t POT_START = 0; // Offset of potentiometer controls in controller table
@@ -92,6 +94,8 @@ Controller g_anControllers[MAX_CONTROLLERS]; // Array of controller objects
 
 void setup()
 {
+    // Disable serial to free USB serial pins (GPIO 23, 24)
+    Serial.end();
     // Configure I2C interface
     Wire.begin(I2CADDR);
     Wire.onRequest(onI2Crequest);
@@ -161,7 +165,8 @@ void readAdc()
 void readSwitch()
 {
     for(uint8_t nOutput = 0; nOutput < sizeof(MatrixOutputPins); ++nOutput)
-        digitalWrite(MatrixOutputPins[nOutput], LOW);
+        digitalWrite(MatrixOutputPins[nOutput], LOW); // Reset all matrix output pins
+
     for(uint8_t nY = 0; nY < sizeof(MatrixOutputPins); ++nY)
     {
         // This is the iteration for setting outupt of Y-axis of switch matrix
@@ -169,7 +174,7 @@ void readSwitch()
         for(uint8_t nX = 0; nX < sizeof(SwitchInputPins); ++nX)
         {
             // This is the iteration for reading the X-axis of switch matrix
-            int nSwitch = nY * sizeof(SwitchInputPins) + nX;
+            int nSwitch = nY + nX * sizeof(MatrixOutputPins);
             if(nSwitch < SWITCHES)
             {
                 int nValue = digitalRead(SwitchInputPins[nX]);
@@ -180,9 +185,6 @@ void readSwitch()
                     g_anControllers[SWITCH_START + nSwitch].dirty = true;
                     g_anControllers[SWITCH_START + nSwitch].time = millis();
                 }
-            } else {
-                digitalWrite(MatrixOutputPins[nY], LOW);
-                return;
             }
         }
         digitalWrite(MatrixOutputPins[nY], LOW);
@@ -195,7 +197,7 @@ void readEncoder()
 {
     int8_t nDir = 0; // Direction of rotation [-1, 0, +1]
     for(uint8_t nOutput = 0; nOutput < sizeof(MatrixOutputPins); ++nOutput)
-        digitalWrite(MatrixOutputPins[nOutput], LOW);
+        digitalWrite(MatrixOutputPins[nOutput], LOW); // Reset all matrix output pins
     for(uint8_t nY = 0; nY < sizeof(MatrixOutputPins); ++nY)
     {
         // This is the iteration for setting outupt of Y-axis of switch matrix
@@ -203,7 +205,7 @@ void readEncoder()
         for(uint8_t nX = 0; nX < sizeof(EncoderInputPins); nX += 2)
         {
             // This is the iteration for reading the X-axis of encoder matrix
-            int nEncoder = (nY * sizeof(EncoderInputPins) + nX) / 2;
+            int nEncoder = (nY + nX / 2 * sizeof(MatrixOutputPins));
             if(nEncoder < ENCODERS)
             {
                 int nClk = digitalRead(EncoderInputPins[nX]);
@@ -237,9 +239,6 @@ void readEncoder()
                         g_anControllers[ENCODER_START + nEncoder].dirty = true;
                     }
                 }
-            } else {
-                digitalWrite(MatrixOutputPins[nY], LOW);
-                return;
             }
         }
         digitalWrite(MatrixOutputPins[nY], LOW);
