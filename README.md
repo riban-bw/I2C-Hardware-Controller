@@ -15,11 +15,11 @@ Note: End-stopped controls are multiplexed but share common +3.3V and 0V supply 
 
 The core of the HWC is a STM32F103 from STMicroelectronics in the form of a Maple Leaf Mini development board. (Blue Pill board may be used with some modification to code - this may be accomodated in a future code update. Blue Pill shares common digital and analogue supplies so may be liable to more noise interference.) This board accepts 5V or 3.3V supply. It operates at 3.3V with some 5V tolerant pins. The HWC is designed to interface with 3.3V devices, e.g. Raspberry Pi but may work with 5V devices without modification.
 
-The potentiometers are connected via 8 x CD4051B 8x1 analogue multiplex chips. It is possible to omit the multiplexers and use just 8 potentiometers (configure USE_ADC_MUX and POTS in the source file - future code update may auto-detect this). Unused inputs are tied to ground to avoid false trigger due to noise.
+8 potentiometers may be connected directly to the ADC inputs or up to 64 potentiometers may be connected via 8 x CD4051B analogue multiplex chips. To use the multiplexers, configuration bit 6 must be set with a jumper. Unused inputs are tied to ground to avoid false trigger due to noise. Separation of analogue and digital supply and ground is recommend as provided by the Maple Leaf Mini (but not the Blue Pill board). Suitable noise filtering capacitors should be placed between the analogue supply rails periodically.
 
 The switches and rotary encoders (which are just a pair of bi-phase oriented switches) are connected as a X-Y matrix with a 1N4148 signal diode between one switch pole and the matrix bus. Fewer switches or rotary encoders may be connected as required.
 
-The HWC acts as a I2C slave with I2C address configurable at compile time. (This may change in future to allow user configuration.) Connections to the master device is via 3 signal wires and 2 power wires thus:
+The HWC acts as a I2C slave with I2C address configurable at boot time (via 6 DIP switches giving address range 0x08 - 0x47). The default with no links is 0x08. Connections to the master device is via 3 signal wires and 2 power wires thus:
 
         ---------------------                      -----------------------
         |                   |-------3.3/5V-------->|                     |
@@ -33,7 +33,7 @@ The INT pin is held high under normal condition and goes low (0V) when there has
 
 # I2C Signal Flow
 
-The I2C master may request the value of any control by sending the control number (1...144) as a single byte message then reading a 16-bit (two byte) response. If the I2C master sends a request for controller zero, the next I2C read will return the index of the first controller with a value that has changed since its last read. Pseudo code may look like:
+The I2C master may request the value of any control by sending the control number (1...154) as a single byte message then reading a 16-bit (two byte) response. If the I2C master sends a request for controller zero, the next I2C read will return the index of the first controller with a value that has changed since its last read. Pseudo code may look like:
 
 ```
 while(GPI_INT == 0) {
