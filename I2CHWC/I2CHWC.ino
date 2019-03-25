@@ -12,27 +12,25 @@
 #include <Wire_slave.h>
 
 // ***Adjust these values to suit hardware installation***
-#define I2CADDR       0x08 // Set HWC I2C address (must be unique on I2C bus)
-#define POTS            16 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
+#define ADC_MUX         8  // Set quantity of ADC multiplexers supported (maximum quantity of 4051 chips)
+#define POTS            64 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
 #define SWITCHES        60 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
 #define ENCODERS        30 // Set quantity of on / off switches (0..MAX_ENCODERS)
 #define ADC_BITS        10 // Set analogue to digital conversion resolution (max 12 bits)
 #define ROT_THRESHOLD   10 // Threshold at which to change rotational scaling
 #define ROT_FAST_SCALE  10 // Factor to muliptly rotational change rate for fast scrolling
 #define DEBOUNCE_TIME   50 // Time in ms to ignore switch value change after previous change
-#define USE_ADC_MUX      1 // Set to enable external ADC multiplexers (4051) otherwise use just 8 ADC inputs
 
 // Do not adjust these:
 #define MAX_POTS        64 // Maximum quantity of potentiometer controls
 #define MAX_SWITCHES    60 // Maximum quantity of on / off switch controls
 #define MAX_ENCODERS    30 // Maximum quantity of rotary encoder controls
-// Only support max 8 POTS if not using external ADC multiplexers
-#if USE_ADC_MUX == 0
-    #if POTS > 8
-        #undef POTS
-        #define POTS 8
-    #endif // POTS
-#endif // USE_ADC_MUX
+#define CONFIG_OFFSET   114 // Base GPI input for system configuration
+/*  Bits    | Use
+    0-5     | I2C address (offset by 8, i.e. range is 0x08 - 0x47 (8 - 71))
+      6     | ADC MUX board installed (use ADC MUX)
+    7-9     | Spare
+*/
 
 //  STM32 GPI15 = I2C SDA, GPI16 = I2 CLK, USB D+ = 23, USB D- = 24
 
@@ -42,8 +40,9 @@ static const uint8_t anValid[] = {0,1,1,0,1,0,0,1,1,0,0,1,0,1,1,0}; // Table of 
 static const uint8_t AnaloguePins[] = {11,10,9,8,7,6,5,4}; // Table of ADC input pins
 static const uint8_t InterruptPin = 32; // GPI pin used to indicate values have changed
 static const uint8_t MatrixOutputPins[] = {17,18,19,20,21,22,23,24,25,26}; // Table of GPI matrix output pins
-static const uint8_t SwitchInputPins[] = {27,28,29,30,31,3}; // Table of GPI matrix input pins for switches
-static const uint8_t EncoderInputPins[] = {0,1,2,12,13,14}; // Table of GPI matrix input pins for encoders
+static const uint8_t SwitchInputPins[] = {27,28,29,30,31}; // Table of GPI matrix input pins for switches
+static const uint8_t EncoderInputPins[] = {0,1,2,3,12,13}; // Table of GPI matrix input pins for encoders
+static const uint8_t ConfigPin = 14; // GPI input pin for device configuration
 static const unsigned int ADC_MASK_BITS = 12 - ADC_BITS; // Quantity of bits to mask ADC
 static const int ADC_FILTER_SAMPLES = 32 >> ADC_MASK_BITS; // Quantity of samples to filter ADC
 static const uint8_t POT_START = 0; // Offset of potentiometer controls in controller table
@@ -89,6 +88,7 @@ struct Controller
 
 // Global variables
 uint8_t g_nLastRead = 0; // The index of the controller last read
+uint8_t g_nAdcMux = 8; // Quantity of external ADC multiplexers (4051)
 int g_nI2Cregister = 0; // Address of I2C register requested by I2C master (index of controller - 1 based)
 Controller g_anControllers[MAX_CONTROLLERS]; // Array of controller objects
 
@@ -96,10 +96,6 @@ void setup()
 {
     // Disable serial to free USB serial pins (GPIO 23, 24)
     Serial.end();
-    // Configure I2C interface
-    Wire.begin(I2CADDR);
-    Wire.onRequest(onI2Crequest);
-    Wire.onReceive(onI2Creceive);
 
     // Configure GPI pins
     for(uint8_t i = 0; i < sizeof(AnaloguePins); ++i)
@@ -111,6 +107,7 @@ void setup()
     for(uint8_t i = 0; i < sizeof(EncoderInputPins); ++i)
         pinMode(EncoderInputPins[i], INPUT_PULLDOWN);
     pinMode(InterruptPin, OUTPUT);
+    pinMode(ConfigPin, INPUT_PULLDOWN);
 
     // Configure controller objects
     for(int i = POT_START; i < POT_START + MAX_POTS; ++i)
@@ -119,29 +116,42 @@ void setup()
         g_anControllers[i].type = CONTROLLER_TYPE_SWITCH;
     for(int i = ENCODER_START; i < ENCODER_START + MAX_ENCODERS; ++i)
         g_anControllers[i].type = CONTROLLER_TYPE_ENCODER;
+
+    // Configure I2C interface
+    uint16_t nConfig = 0;
+    for(uint8_t nOutput = 0; nOutput < sizeof(MatrixOutputPins); ++nOutput)
+        digitalWrite(MatrixOutputPins[nOutput], LOW); // Reset all matrix output pins
+
+    for(uint8_t nOutput = 0; nOutput < sizeof(MatrixOutputPins); ++nOutput)
+    {
+        digitalWrite(MatrixOutputPins[nOutput], HIGH);
+        nConfig |= (digitalRead(ConfigPin) << nOutput);
+        digitalWrite(MatrixOutputPins[nOutput], LOW);
+    }
+    g_nAdcMux = (nConfig & 0x40)?g_nAdcMux:1; // If ADC breakout board fitted then use ADC MUX
+    Wire.begin(8 + (nConfig & 0x3F)); // I2C address is 8 + config switches 1-6
+    Wire.onRequest(onI2Crequest);
+    Wire.onReceive(onI2Creceive);
 }
 
 /** @brief  Read ADCs
 */
 void readAdc()
 {
-    //Monitor analogue inputs (potentiometers)
-    for(uint8_t nMux = 0; nMux < 8; ++nMux)
+    uint8_t nPot;
+    for(uint8_t nMux = 0; nMux < g_nAdcMux; ++nMux)
     {
-        #if USE_ADC_MUX == 1
-        // Configure external analouge multiplexer
+        // Configure external analogue multiplexer
         digitalWrite(MatrixOutputPins[0], nMux & 0x01);
         digitalWrite(MatrixOutputPins[1], nMux & 0x02);
         digitalWrite(MatrixOutputPins[2], nMux & 0x04);
-        #endif // USE_ADC_MUX
         for(uint8_t nAdc = 0; nAdc < 8; ++nAdc)
         {
-            #if USE_ADC_MUX == 1
-            uint8_t nPot = nMux + nAdc * 8;
-            #else
-            uint8_t nPot = nMux * 8 + nAdc;
-            #endif // USE_ADC_MUX
-            if(nPot < POTS)
+            if(g_nAdcMux > 1)
+                nPot = nMux + nAdc * 8; // Interleave multiplexed ADC values
+            else
+                nPot = nMux * 8 + nAdc; // Map ADC values direct
+            if(nPot < POTS) //!@todo Can we remove limit on reading pots? (noise sufficiently low to avoid false triggers)
             {
                 int nAnaRead = analogRead(AnaloguePins[nAdc]);
                 if(abs(nAnaRead - g_anControllers[POT_START + nPot].value) < (1 << ADC_MASK_BITS))
