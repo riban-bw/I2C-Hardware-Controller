@@ -50,7 +50,9 @@ static const uint8_t SWITCH_START = MAX_POTS; // Offset of on / off switch contr
 static const uint8_t ENCODER_START = MAX_POTS + MAX_SWITCHES; // Offset of rotary encoder controls in controller table
 static const uint8_t MAX_CONTROLLERS = ENCODER_START + MAX_ENCODERS; // Maximum quantity of controllers
 
-/** Controller types */
+/** Controller types
+*   @todo   Controller type is not used
+*/
 enum CONTROLLER_TYPE
 {
     CONTROLLER_TYPE_POT,
