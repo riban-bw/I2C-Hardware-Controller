@@ -50,10 +50,10 @@ Data value for rotary encoders is -1 for single counter-clockwise rotation deten
 
 The HWC has 154 registers, one for each possible control. Unpopulated controls will return a zero value.
 
-Register | Use
--------- | ---
-0        | Index of next control that has changed
-1 - 64   | Potentiometers 1 - 64
-65 - 114 | Switches 1 - 50
-115 - 144 | Encoders 1 - 30
+Register | Use | Range
+-------- | --- | -----
+0        | Index of next control that has changed | 0 - 144 (0 for no change)
+1 - 64   | Potentiometers 1 - 64 | 0 - 4096
+65 - 114 | Switches 1 - 50 | 0 - 1
+115 - 144 | Encoders 1 - 30 | -32768 - 32768
 
