@@ -55,5 +55,5 @@ Register | Use | Range
 0        | Index of next control that has changed | 0 - 144 (0 for no change)
 1 - 64   | Potentiometers 1 - 64 | 0 - 4096
 65 - 114 | Switches 1 - 50 | 0 - 1
-115 - 144 | Encoders 1 - 30 | -32768 - 32768
+115 - 144 | Encoders 1 - 30 | -32768 - 32767
 
