@@ -5,65 +5,54 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Title "I2C Hardware Controller"
+Date "2019-03-28"
+Rev "1"
+Comp "riban"
+Comment1 "https://github.com/riban-bw/I2C-Hardware-Controller"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "(Encoders 11-30 and potentiometers 9-64 are presented on extention boards)"
+Comment4 "Provides 30 rotary encoders with switches, 20 GPI inputs & 64 potentiometer inputs"
 $EndDescr
-$Comp
-L I2CHWC-rescue:MapleMini-microcontrollers U9
-U 1 1 5C876EAA
-P 8150 4900
-F 0 "U9" H 8150 5950 60  0000 C CNN
-F 1 "MapleMini" H 8200 5850 60  0000 C CNN
-F 2 "Package_DIP:DIP-40_W15.24mm" H 8200 5500 60  0001 C CNN
-F 3 "" H 8200 5500 60  0001 C CNN
-	1    8150 4900
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:GND #PWR01
 U 1 1 5C88F031
-P 9250 3800
-F 0 "#PWR01" H 9250 3550 50  0001 C CNN
-F 1 "GND" H 9250 3650 50  0000 C CNN
-F 2 "" H 9250 3800 50  0001 C CNN
-F 3 "" H 9250 3800 50  0001 C CNN
-	1    9250 3800
+P 7700 6100
+F 0 "#PWR01" H 7700 5850 50  0001 C CNN
+F 1 "GND" H 7700 5950 50  0000 C CNN
+F 2 "" H 7700 6100 50  0001 C CNN
+F 3 "" H 7700 6100 50  0001 C CNN
+	1    7700 6100
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GNDA #PWR02
 U 1 1 5C88F052
-P 6900 4050
-F 0 "#PWR02" H 6900 3800 50  0001 C CNN
-F 1 "GNDA" H 6900 3900 50  0000 C CNN
-F 2 "" H 6900 4050 50  0001 C CNN
-F 3 "" H 6900 4050 50  0001 C CNN
-	1    6900 4050
+P 6150 5750
+F 0 "#PWR02" H 6150 5500 50  0001 C CNN
+F 1 "GNDA" H 6150 5600 50  0000 C CNN
+F 2 "" H 6150 5750 50  0001 C CNN
+F 3 "" H 6150 5750 50  0001 C CNN
+	1    6150 5750
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+3V3 #PWR03
 U 1 1 5C88F0C4
-P 8950 3850
-F 0 "#PWR03" H 8950 3700 50  0001 C CNN
-F 1 "+3V3" H 8950 3990 50  0000 C CNN
-F 2 "" H 8950 3850 50  0001 C CNN
-F 3 "" H 8950 3850 50  0001 C CNN
-	1    8950 3850
+P 7600 3600
+F 0 "#PWR03" H 7600 3450 50  0001 C CNN
+F 1 "+3V3" H 7600 3740 50  0000 C CNN
+F 2 "" H 7600 3600 50  0001 C CNN
+F 3 "" H 7600 3600 50  0001 C CNN
+	1    7600 3600
 	1    0    0    -1  
 $EndComp
-NoConn ~ 7600 4550
-Text GLabel 7500 5750 0    60   Input ~ 0
+NoConn ~ 6900 5550
+Text GLabel 6800 3950 0    60   Input ~ 0
 EncIn1a
-Text GLabel 7500 5650 0    60   Input ~ 0
+Text GLabel 6800 4050 0    60   Input ~ 0
 EncIn1b
-Text GLabel 7500 5550 0    60   Input ~ 0
+Text GLabel 6800 4150 0    60   Input ~ 0
 EncIn2a
 $Comp
 L Device:R R1
@@ -78,136 +67,66 @@ F 3 "" H 1300 1500 50  0001 C CNN
 $EndComp
 Text GLabel 1150 850  0    60   Input ~ 0
 ADC1
-Text GLabel 7500 4650 0    60   Input ~ 0
+Text GLabel 6800 5050 0    60   Input ~ 0
 ADC1
-Text GLabel 7500 4750 0    60   Input ~ 0
+Text GLabel 6800 4950 0    60   Input ~ 0
 ADC2
-Text GLabel 7500 4850 0    60   Input ~ 0
+Text GLabel 6800 4850 0    60   Input ~ 0
 ADC3
-Text GLabel 7500 4950 0    60   Input ~ 0
+Text GLabel 6800 4750 0    60   Input ~ 0
 ADC4
-Text GLabel 7500 5050 0    60   Input ~ 0
+Text GLabel 6800 4650 0    60   Input ~ 0
 ADC5
-Text GLabel 7500 5150 0    60   Input ~ 0
+Text GLabel 6800 4550 0    60   Input ~ 0
 ADC6
-Text GLabel 7500 5250 0    60   Input ~ 0
+Text GLabel 6800 4450 0    60   Input ~ 0
 ADC7
-Text GLabel 8850 4450 2    60   Output ~ 0
+Text GLabel 8600 4150 2    60   Output ~ 0
 MatrixOut1
-Text GLabel 8850 4550 2    60   Output ~ 0
+Text GLabel 8600 4250 2    60   Output ~ 0
 MatrixOut2
-Text GLabel 8850 4650 2    60   Output ~ 0
+Text GLabel 8600 4350 2    60   Output ~ 0
 MatrixOut3
-Text GLabel 8850 4750 2    60   Output ~ 0
+Text GLabel 8600 4450 2    60   Output ~ 0
 MatrixOut4
-Text GLabel 8850 4850 2    60   Output ~ 0
+Text GLabel 8600 4550 2    60   Output ~ 0
 MatrixOut5
-Text GLabel 8850 4950 2    60   Output ~ 0
+Text GLabel 8600 4650 2    60   Output ~ 0
 MatrixOut6
-Text GLabel 8850 5050 2    60   Output ~ 0
+Text GLabel 8600 4750 2    60   Output ~ 0
 MatrixOut7
-Text GLabel 8850 5150 2    60   Output ~ 0
+Text GLabel 8600 4850 2    60   Output ~ 0
 MatrixOut8
-Text GLabel 8850 5250 2    60   Output ~ 0
+Text GLabel 8600 4950 2    60   Output ~ 0
 MatrixOut9
-Text GLabel 8850 5350 2    60   Output ~ 0
+Text GLabel 8600 5050 2    60   Output ~ 0
 MatrixOut10
-NoConn ~ 7600 4150
-Text GLabel 7500 4250 0    60   Input ~ 0
+NoConn ~ 7800 3750
+Text GLabel 6800 5350 0    60   Input ~ 0
 ConfigIn
-Text GLabel 7500 4350 0    60   Input ~ 0
+Text GLabel 6800 5250 0    60   Input ~ 0
 EncIn3b
-Text GLabel 7500 4450 0    60   Input ~ 0
+Text GLabel 6800 5150 0    60   Input ~ 0
 EncIn3a
-Text GLabel 7500 5450 0    60   Input ~ 0
+Text GLabel 6800 4250 0    60   Input ~ 0
 EncIn2b
 $Comp
 L power:+3.3VA #PWR09
 U 1 1 5C8CB7D6
-P 6900 3950
-F 0 "#PWR09" H 6900 3800 50  0001 C CNN
-F 1 "+3.3VA" H 6900 4090 50  0000 C CNN
-F 2 "" H 6900 3950 50  0001 C CNN
-F 3 "" H 6900 3950 50  0001 C CNN
-	1    6900 3950
+P 6150 5650
+F 0 "#PWR09" H 6150 5500 50  0001 C CNN
+F 1 "+3.3VA" H 6150 5790 50  0000 C CNN
+F 2 "" H 6150 5650 50  0001 C CNN
+F 3 "" H 6150 5650 50  0001 C CNN
+	1    6150 5650
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7550 5850 7600 5850
+	10150 4150 10150 3600
 Wire Wire Line
-	7550 6000 7550 5850
+	6900 5650 6150 5650
 Wire Wire Line
-	10450 6000 7550 6000
-Wire Wire Line
-	10450 4600 10450 6000
-Wire Wire Line
-	7500 5450 7600 5450
-Wire Wire Line
-	7500 4450 7600 4450
-Wire Wire Line
-	7500 4350 7600 4350
-Wire Wire Line
-	7500 4250 7600 4250
-Wire Wire Line
-	8850 4850 8750 4850
-Wire Wire Line
-	8750 4750 8850 4750
-Wire Wire Line
-	8850 4650 8750 4650
-Wire Wire Line
-	8750 4550 8850 4550
-Wire Wire Line
-	8850 4450 8750 4450
-Wire Wire Line
-	8750 5850 8850 5850
-Wire Wire Line
-	8750 5750 8850 5750
-Wire Wire Line
-	8750 5650 8850 5650
-Wire Wire Line
-	8750 5550 8850 5550
-Wire Wire Line
-	8750 5450 8850 5450
-Wire Wire Line
-	8750 5350 8850 5350
-Wire Wire Line
-	8750 5250 8850 5250
-Wire Wire Line
-	8750 5150 8850 5150
-Wire Wire Line
-	8750 5050 8850 5050
-Wire Wire Line
-	8750 4950 8850 4950
-Wire Wire Line
-	7500 5350 7600 5350
-Wire Wire Line
-	7500 5250 7600 5250
-Wire Wire Line
-	7500 5150 7600 5150
-Wire Wire Line
-	7500 5050 7600 5050
-Wire Wire Line
-	7500 4950 7600 4950
-Wire Wire Line
-	7500 4850 7600 4850
-Wire Wire Line
-	7500 4750 7600 4750
-Wire Wire Line
-	7500 4650 7600 4650
-Wire Wire Line
-	7500 5750 7600 5750
-Wire Wire Line
-	7500 5650 7600 5650
-Wire Wire Line
-	7500 5550 7600 5550
-Wire Wire Line
-	8950 3950 8950 3850
-Wire Wire Line
-	8750 3950 8950 3950
-Wire Wire Line
-	7600 3950 6900 3950
-Wire Wire Line
-	6900 4050 7600 4050
+	6150 5750 6900 5750
 $Comp
 L Device:D D41
 U 1 1 5C91266E
@@ -220,11 +139,7 @@ F 3 "" H 9350 800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9100 2700 9200 2700
-Wire Wire Line
 	9500 800  9550 800 
-Wire Wire Line
-	9100 2600 9200 2600
 Wire Wire Line
 	9100 2500 9200 2500
 Wire Wire Line
@@ -745,33 +660,22 @@ Wire Wire Line
 	1800 1350 2000 1350
 Wire Wire Line
 	2000 1350 2000 1700
-Text GLabel 8850 5450 2    60   Input ~ 0
+Text GLabel 8600 5150 2    60   Input ~ 0
 SwitchIn1
-Text GLabel 8850 5550 2    60   Input ~ 0
+Text GLabel 8600 5250 2    60   Input ~ 0
 SwitchIn2
-Text GLabel 8850 5650 2    60   Input ~ 0
+Text GLabel 8600 5350 2    60   Input ~ 0
 SwitchIn3
-Text GLabel 8850 5750 2    60   Input ~ 0
+Text GLabel 8600 5450 2    60   Input ~ 0
 SwitchIn4
-Text GLabel 8850 5850 2    60   Input ~ 0
+Text GLabel 8600 5550 2    60   Input ~ 0
 SwitchIn5
-Text GLabel 7500 5350 0    60   Input ~ 0
+Text GLabel 6800 4350 0    60   Input ~ 0
 ADC8
 Text GLabel 9000 800  0    60   Output ~ 0
 SwitchIn4
 Text GLabel 9000 1800 0    60   Output ~ 0
 SwitchIn5
-$Comp
-L I2CHWC-rescue:CONN_02X20-conn J5
-U 1 1 5C8E5A66
-P 6650 1750
-F 0 "J5" H 6650 2800 50  0000 C CNN
-F 1 "Encoders 1-10" V 6650 1750 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical" H 6650 800 50  0001 C CNN
-F 3 "" H 6650 800 50  0001 C CNN
-	1    6650 1750
-	1    0    0    -1  
-$EndComp
 Text GLabel 5700 800  0    60   Output ~ 0
 SwitchIn1
 Text GLabel 5700 900  0    60   Output ~ 0
@@ -1383,17 +1287,6 @@ Wire Wire Line
 	10250 1700 10050 1700
 Wire Wire Line
 	10250 1600 10050 1600
-$Comp
-L I2CHWC-rescue:CONN_02X20-conn J6
-U 1 1 5C912668
-P 9800 1750
-F 0 "J6" H 9800 2800 50  0000 C CNN
-F 1 "Switches 41-50" V 9800 1750 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical" H 9800 800 50  0001 C CNN
-F 3 "" H 9800 800 50  0001 C CNN
-	1    9800 1750
-	1    0    0    -1  
-$EndComp
 Text GLabel 10250 1400 2    60   Input ~ 0
 MatrixOut7
 Text GLabel 10250 1500 2    60   Input ~ 0
@@ -1553,7 +1446,7 @@ Wire Wire Line
 	9100 2600 9100 2500
 Wire Wire Line
 	1700 2900 1850 2900
-Text GLabel 2500 3100 2    60   Output ~ 0
+Text GLabel 2800 3100 2    60   Output ~ 0
 ConfigIn
 Wire Wire Line
 	2500 2300 2350 2300
@@ -1606,12 +1499,12 @@ MatrixOut2
 $Comp
 L power:+3V3 #PWR05
 U 1 1 5C8989C0
-P 3100 3100
-F 0 "#PWR05" H 3100 2950 50  0001 C CNN
-F 1 "+3V3" H 3100 3240 50  0000 C CNN
-F 2 "" H 3100 3100 50  0001 C CNN
-F 3 "" H 3100 3100 50  0001 C CNN
-	1    3100 3100
+P 3450 3100
+F 0 "#PWR05" H 3450 2950 50  0001 C CNN
+F 1 "+3V3" H 3450 3240 50  0000 C CNN
+F 2 "" H 3450 3100 50  0001 C CNN
+F 3 "" H 3450 3100 50  0001 C CNN
+	1    3450 3100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1628,88 +1521,55 @@ $EndComp
 $Comp
 L Connector:Conn_01x03_Male J2
 U 1 1 5CA5F028
-P 10600 4500
-F 0 "J2" H 10700 4700 50  0000 C CNN
-F 1 "INT SEL" H 10700 4350 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 10600 4500 50  0001 C CNN
-F 3 "~" H 10600 4500 50  0001 C CNN
-	1    10600 4500
+P 10300 4050
+F 0 "J2" H 10400 4250 50  0000 C CNN
+F 1 "INT SEL" H 10400 3900 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 10300 4050 50  0001 C CNN
+F 3 "~" H 10300 4050 50  0001 C CNN
+	1    10300 4050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9250 3800 9250 3750
+	10200 3950 10200 3750
 Wire Wire Line
-	9250 3750 9100 3750
+	10200 3750 10600 3750
 Wire Wire Line
-	9100 4050 8750 4050
+	10600 3750 10600 3950
 Wire Wire Line
-	9100 3750 9100 4050
+	10600 3950 10500 3950
 Wire Wire Line
-	10500 4400 10500 4200
+	10200 4050 10200 4300
 Wire Wire Line
-	10500 4200 10900 4200
+	10200 4300 10600 4300
 Wire Wire Line
-	10900 4200 10900 4400
+	10600 4300 10600 4150
 Wire Wire Line
-	10900 4400 10800 4400
+	10600 4150 10500 4150
 Wire Wire Line
-	10500 4500 10500 4750
+	10500 4050 10700 4050
 Wire Wire Line
-	10500 4750 10900 4750
+	10700 4050 10700 5650
 Wire Wire Line
-	10900 4750 10900 4600
+	10050 4150 10150 4150
 Wire Wire Line
-	10900 4600 10800 4600
+	10050 4050 10200 4050
 Wire Wire Line
-	10800 4500 11000 4500
-Wire Wire Line
-	11000 4500 11000 4150
-Wire Wire Line
-	10350 4600 10450 4600
-Wire Wire Line
-	10350 4500 10500 4500
-Wire Wire Line
-	10350 4400 10500 4400
-$Comp
-L I2CHWC-rescue:CONN_02X03-conn J1
-U 1 1 5C8A14F3
-P 10100 4500
-F 0 "J1" H 10100 4700 50  0000 C CNN
-F 1 "I2C" H 10100 4300 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 10100 3300 50  0001 C CNN
-F 3 "" H 10100 3300 50  0001 C CNN
-	1    10100 4500
-	1    0    0    -1  
-$EndComp
+	10050 3950 10200 3950
 $Comp
 L power:GND #PWR08
 U 1 1 5CC3D97D
-P 9750 4650
-F 0 "#PWR08" H 9750 4400 50  0001 C CNN
-F 1 "GND" H 9750 4500 50  0000 C CNN
-F 2 "" H 9750 4650 50  0001 C CNN
-F 3 "" H 9750 4650 50  0001 C CNN
-	1    9750 4650
+P 9450 4200
+F 0 "#PWR08" H 9450 3950 50  0001 C CNN
+F 1 "GND" H 9450 4050 50  0000 C CNN
+F 2 "" H 9450 4200 50  0001 C CNN
+F 3 "" H 9450 4200 50  0001 C CNN
+	1    9450 4200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9750 4650 9750 4600
+	9450 4200 9450 4150
 Wire Wire Line
-	9750 4600 9850 4600
-Wire Wire Line
-	8750 4250 9750 4250
-Wire Wire Line
-	9750 4250 9750 4400
-Wire Wire Line
-	9750 4400 9850 4400
-Wire Wire Line
-	8750 4350 9650 4350
-Wire Wire Line
-	9650 4350 9650 4500
-Wire Wire Line
-	9650 4500 9850 4500
-Wire Wire Line
-	8750 4150 11000 4150
+	9450 4150 9550 4150
 Wire Wire Line
 	5800 1000 5800 800 
 Wire Wire Line
@@ -1863,9 +1723,9 @@ F 3 "~" H 2050 2700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3100 3100 3100 3200
+	3450 3100 3450 3200
 Wire Wire Line
-	3100 3200 2350 3200
+	3450 3200 2350 3200
 Wire Wire Line
 	1850 3200 1600 3200
 Wire Wire Line
@@ -1883,8 +1743,217 @@ Wire Wire Line
 Wire Wire Line
 	2350 3000 2500 3000
 Wire Wire Line
-	2350 3100 2500 3100
-Wire Wire Line
 	1850 3000 1700 3000
 NoConn ~ 1850 3100
+$Comp
+L MCU_Module:Maple_Mini U9
+U 1 1 5CA1B2C6
+P 7700 4850
+F 0 "U9" H 7700 4900 50  0000 C CNN
+F 1 "Maple_Mini" H 7700 4750 50  0000 C CNN
+F 2 "Module:Maple_Mini" H 7750 3800 50  0001 L CNN
+F 3 "http://docs.leaflabs.com/static.leaflabs.com/pub/leaflabs/maple-docs/0.0.12/hardware/maple-mini.html" H 7750 2850 50  0001 L CNN
+	1    7700 4850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J1
+U 1 1 5CC0AF1D
+P 9750 4050
+F 0 "J1" H 9800 4367 50  0000 C CNN
+F 1 "PWR/I2C" H 9800 4276 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 9750 4050 50  0001 C CNN
+F 3 "~" H 9750 4050 50  0001 C CNN
+	1    9750 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8500 3950 9550 3950
+Wire Wire Line
+	9550 4050 8500 4050
+Wire Wire Line
+	10700 5650 8500 5650
+Wire Wire Line
+	7700 6100 7700 5950
+Wire Wire Line
+	7600 3750 7600 3600
+Wire Wire Line
+	10150 3600 7700 3600
+Wire Wire Line
+	7700 3600 7700 3750
+$Comp
+L Connector_Generic:Conn_02x20_Odd_Even J5
+U 1 1 5CE64B57
+P 6600 1700
+F 0 "J5" H 6650 2817 50  0000 C CNN
+F 1 "Encoders 1-10" H 6650 2726 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical" H 6600 1700 50  0001 C CNN
+F 3 "~" H 6600 1700 50  0001 C CNN
+	1    6600 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_02x20_Odd_Even J6
+U 1 1 5CE6A718
+P 9750 1700
+F 0 "J6" H 9800 2817 50  0000 C CNN
+F 1 "Switches 41-50" H 9800 2726 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical" H 9750 1700 50  0001 C CNN
+F 3 "~" H 9750 1700 50  0001 C CNN
+	1    9750 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6800 3950 6900 3950
+Wire Wire Line
+	9100 2700 9200 2700
+Wire Wire Line
+	9100 2600 9200 2600
+Wire Wire Line
+	6900 4050 6800 4050
+Wire Wire Line
+	6800 4150 6900 4150
+Wire Wire Line
+	6900 4250 6800 4250
+Wire Wire Line
+	6800 4350 6900 4350
+Wire Wire Line
+	6900 4450 6800 4450
+Wire Wire Line
+	6800 4550 6900 4550
+Wire Wire Line
+	6900 4650 6800 4650
+Wire Wire Line
+	6800 4750 6900 4750
+Wire Wire Line
+	6900 4850 6800 4850
+Wire Wire Line
+	6800 4950 6900 4950
+Wire Wire Line
+	6900 5050 6800 5050
+Wire Wire Line
+	6800 5150 6900 5150
+Wire Wire Line
+	6900 5250 6800 5250
+Wire Wire Line
+	6800 5350 6900 5350
+Wire Wire Line
+	8500 5550 8600 5550
+Wire Wire Line
+	8600 5450 8500 5450
+Wire Wire Line
+	8500 5350 8600 5350
+Wire Wire Line
+	8600 5250 8500 5250
+Wire Wire Line
+	8500 5150 8600 5150
+Wire Wire Line
+	8600 5050 8500 5050
+Wire Wire Line
+	8500 4950 8600 4950
+Wire Wire Line
+	8600 4850 8500 4850
+Wire Wire Line
+	8500 4750 8600 4750
+Wire Wire Line
+	8600 4650 8500 4650
+Wire Wire Line
+	8500 4550 8600 4550
+Wire Wire Line
+	8600 4450 8500 4450
+Wire Wire Line
+	8500 4350 8600 4350
+Wire Wire Line
+	8600 4250 8500 4250
+Wire Wire Line
+	8500 4150 8600 4150
+$Comp
+L Device:D D11
+U 1 1 5CA979D0
+P 2600 3100
+F 0 "D11" H 2750 3150 50  0000 C CNN
+F 1 "1N4148" H 2600 3100 50  0001 C CNN
+F 2 "Diode_THT:D_DO-35_SOD27_P10.16mm_Horizontal" H 2600 3100 50  0001 C CNN
+F 3 "" H 2600 3100 50  0001 C CNN
+	1    2600 3100
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2350 3100 2450 3100
+Wire Wire Line
+	2750 3100 2800 3100
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 5CB73882
+P 5700 7300
+F 0 "H2" H 5650 7500 50  0000 L CNN
+F 1 "MountingHole_Pad" H 5800 7258 50  0001 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 5700 7300 50  0001 C CNN
+F 3 "~" H 5700 7300 50  0001 C CNN
+	1    5700 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 5CBBFB18
+P 6100 7300
+F 0 "H4" H 6050 7500 50  0000 L CNN
+F 1 "MountingHole_Pad" H 6200 7258 50  0001 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 6100 7300 50  0001 C CNN
+F 3 "~" H 6100 7300 50  0001 C CNN
+	1    6100 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 5CB71CD7
+P 5500 7300
+F 0 "H1" H 5450 7500 50  0000 L CNN
+F 1 "MountingHole_Pad" H 5600 7258 50  0001 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 5500 7300 50  0001 C CNN
+F 3 "~" H 5500 7300 50  0001 C CNN
+	1    5500 7300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5CA79496
+P 5500 7500
+F 0 "#PWR?" H 5500 7250 50  0001 C CNN
+F 1 "GND" H 5505 7327 50  0000 C CNN
+F 2 "" H 5500 7500 50  0001 C CNN
+F 3 "" H 5500 7500 50  0001 C CNN
+	1    5500 7500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5500 7400 5500 7450
+Wire Wire Line
+	5500 7450 5700 7450
+Wire Wire Line
+	5500 7450 5500 7500
+Wire Wire Line
+	5700 7400 5700 7450
+Connection ~ 5700 7450
+Wire Wire Line
+	6100 7400 6100 7450
+Wire Wire Line
+	6100 7450 5900 7450
+Connection ~ 5500 7450
+Wire Wire Line
+	5900 7400 5900 7450
+Connection ~ 5900 7450
+Wire Wire Line
+	5900 7450 5700 7450
+$Comp
+L Mechanical:MountingHole_Pad H3
+U 1 1 5CB999C1
+P 5900 7300
+F 0 "H3" H 5850 7500 50  0000 L CNN
+F 1 "MountingHole_Pad" H 6000 7258 50  0001 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 5900 7300 50  0001 C CNN
+F 3 "~" H 5900 7300 50  0001 C CNN
+	1    5900 7300
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

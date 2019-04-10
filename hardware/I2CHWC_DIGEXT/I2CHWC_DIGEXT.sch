@@ -1,17 +1,18 @@
 EESchema Schematic File Version 4
+LIBS:I2CHWC_DIGEXT-cache
 EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Title "I2C HWC Digital Extender"
+Date "2019-03-28"
+Rev "1"
+Comp "riban"
+Comment1 "https://github.com/riban-bw/I2C-Hardware-Controller"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "Provides rotary encoders 11 - 30"
+Comment4 "Extender board for riban I2C HWC"
 $EndDescr
 $Comp
 L Connector_Generic:Conn_02x20_Odd_Even J1
@@ -1280,4 +1281,78 @@ NoConn ~ 8200 1850
 NoConn ~ 8200 1950
 NoConn ~ 7700 1950
 NoConn ~ 7700 1850
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 5CA14710
+P 5650 6900
+F 0 "H1" H 5750 6949 50  0000 L CNN
+F 1 "MountingHole_Pad" H 5750 6858 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 5650 6900 50  0001 C CNN
+F 3 "~" H 5650 6900 50  0001 C CNN
+	1    5650 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 5CA14A13
+P 5850 6900
+F 0 "H2" H 5950 6949 50  0000 L CNN
+F 1 "MountingHole_Pad" H 5950 6858 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 5850 6900 50  0001 C CNN
+F 3 "~" H 5850 6900 50  0001 C CNN
+	1    5850 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H3
+U 1 1 5CA14A61
+P 6050 6900
+F 0 "H3" H 6150 6949 50  0000 L CNN
+F 1 "MountingHole_Pad" H 6150 6858 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 6050 6900 50  0001 C CNN
+F 3 "~" H 6050 6900 50  0001 C CNN
+	1    6050 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 5CA14A92
+P 6250 6900
+F 0 "H4" H 6350 6949 50  0000 L CNN
+F 1 "MountingHole_Pad" H 6350 6858 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 6250 6900 50  0001 C CNN
+F 3 "~" H 6250 6900 50  0001 C CNN
+	1    6250 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5CA2BF9E
+P 6250 7100
+F 0 "#PWR?" H 6250 6850 50  0001 C CNN
+F 1 "GND" H 6255 6927 50  0000 C CNN
+F 2 "" H 6250 7100 50  0001 C CNN
+F 3 "" H 6250 7100 50  0001 C CNN
+	1    6250 7100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5650 7000 5650 7050
+Wire Wire Line
+	5650 7050 5850 7050
+Wire Wire Line
+	6250 7050 6250 7000
+Wire Wire Line
+	6250 7100 6250 7050
+Connection ~ 6250 7050
+Wire Wire Line
+	6050 7050 6050 7000
+Connection ~ 6050 7050
+Wire Wire Line
+	6050 7050 6250 7050
+Wire Wire Line
+	5850 7050 5850 7000
+Connection ~ 5850 7050
+Wire Wire Line
+	5850 7050 6050 7050
 $EndSCHEMATC

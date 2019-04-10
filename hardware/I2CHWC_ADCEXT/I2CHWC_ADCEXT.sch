@@ -1,28 +1,28 @@
 EESchema Schematic File Version 4
-LIBS:I2CHWC_Extension-cache
+LIBS:I2CHWC_ADCEXT-cache
 EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Title "I2C HWC Analogue Multiplexer Board"
+Date "2019-03-28"
+Rev "1"
+Comp "riban"
+Comment1 "https://github.com/riban-bw/I2C-Hardware-Controller"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "Provides 64 analogue inputs"
+Comment4 "Extension board for riban I2C HWC"
 $EndDescr
 $Comp
 L power:GND #PWR09
 U 1 1 5CA14092
-P 1050 2050
-F 0 "#PWR09" H 1050 1800 50  0001 C CNN
-F 1 "GND" H 1050 1900 50  0000 C CNN
-F 2 "" H 1050 2050 50  0001 C CNN
-F 3 "" H 1050 2050 50  0001 C CNN
-	1    1050 2050
+P 1500 2050
+F 0 "#PWR09" H 1500 1800 50  0001 C CNN
+F 1 "GND" H 1500 1900 50  0000 C CNN
+F 2 "" H 1500 2050 50  0001 C CNN
+F 3 "" H 1500 2050 50  0001 C CNN
+	1    1500 2050
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -52,23 +52,18 @@ $EndComp
 $Comp
 L power:GNDA #PWR010
 U 1 1 5CA140B6
-P 1600 2050
-F 0 "#PWR010" H 1600 1800 50  0001 C CNN
-F 1 "GNDA" H 1600 1900 50  0000 C CNN
-F 2 "" H 1600 2050 50  0001 C CNN
-F 3 "" H 1600 2050 50  0001 C CNN
-	1    1600 2050
+P 1900 2050
+F 0 "#PWR010" H 1900 1800 50  0001 C CNN
+F 1 "GNDA" H 1900 1900 50  0000 C CNN
+F 2 "" H 1900 2050 50  0001 C CNN
+F 3 "" H 1900 2050 50  0001 C CNN
+	1    1900 2050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1500 1850 1050 1850
+	1500 1850 1500 2000
 Wire Wire Line
-	1050 1850 1050 2050
-Wire Wire Line
-	1200 1550 1050 1550
-Wire Wire Line
-	1050 1550 1050 1850
-Connection ~ 1050 1850
+	1200 1550 1150 1550
 Wire Wire Line
 	1500 700  1500 750 
 Wire Wire Line
@@ -123,12 +118,9 @@ Wire Wire Line
 Wire Wire Line
 	1900 1350 2100 1350
 Wire Wire Line
-	1600 1950 1600 1850
+	1900 2050 1900 1950
 Wire Wire Line
-	1600 2050 1600 1950
-Connection ~ 1600 1950
-Wire Wire Line
-	2750 1950 1600 1950
+	2750 1950 1900 1950
 Wire Wire Line
 	2850 1650 1900 1650
 Wire Wire Line
@@ -154,66 +146,6 @@ Wire Wire Line
 	1900 1450 2050 1450
 Wire Wire Line
 	1900 1150 2000 1150
-Text GLabel 7050 4750 0    60   Input ~ 0
-ADC1
-Text GLabel 7750 4750 2    60   Input ~ 0
-ADC2
-Text GLabel 7750 4850 2    60   Input ~ 0
-ADC4
-Text GLabel 7750 4950 2    60   Input ~ 0
-ADC6
-Text GLabel 7750 5050 2    60   Input ~ 0
-ADC8
-Wire Wire Line
-	7050 4750 7150 4750
-Wire Wire Line
-	7150 4850 7050 4850
-Wire Wire Line
-	7050 4950 7150 4950
-Wire Wire Line
-	7150 5050 7050 5050
-Wire Wire Line
-	7650 5050 7750 5050
-Wire Wire Line
-	7750 4950 7650 4950
-Wire Wire Line
-	7650 4850 7750 4850
-$Comp
-L power:GNDA #PWR034
-U 1 1 5D93A27A
-P 7050 5300
-F 0 "#PWR034" H 7050 5050 50  0001 C CNN
-F 1 "GNDA" H 7050 5150 50  0000 C CNN
-F 2 "" H 7050 5300 50  0001 C CNN
-F 3 "" H 7050 5300 50  0001 C CNN
-	1    7050 5300
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3V3 #PWR033
-U 1 1 5D93A7BE
-P 8550 5100
-F 0 "#PWR033" H 8550 4950 50  0001 C CNN
-F 1 "+3V3" H 8550 5240 50  0000 C CNN
-F 2 "" H 8550 5100 50  0001 C CNN
-F 3 "" H 8550 5100 50  0001 C CNN
-	1    8550 5100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7150 5150 7050 5150
-Wire Wire Line
-	7050 5150 7050 5300
-Wire Wire Line
-	7650 5150 8550 5150
-Wire Wire Line
-	8550 5150 8550 5100
-Text GLabel 7050 4850 0    60   Input ~ 0
-ADC3
-Text GLabel 7050 4950 0    60   Input ~ 0
-ADC5
-Text GLabel 7050 5050 0    60   Input ~ 0
-ADC7
 $Comp
 L power:GND #PWR011
 U 1 1 5C9C57A4
@@ -1391,109 +1323,51 @@ Wire Wire Line
 Wire Wire Line
 	9750 3150 9850 3150
 Wire Wire Line
-	10200 4750 10050 4750
+	2600 4900 2450 4900
 Wire Wire Line
-	9400 4850 9550 4850
+	1800 5000 1950 5000
 Wire Wire Line
-	9550 4750 9400 4750
-Text GLabel 9400 4850 0    60   Output ~ 0
+	1950 4900 1800 4900
+Text GLabel 1800 5000 0    60   Output ~ 0
 MatrixOut3
-Text GLabel 9400 4750 0    60   Output ~ 0
+Text GLabel 1800 4900 0    60   Output ~ 0
 MatrixOut1
-Text GLabel 10200 4750 2    60   Output ~ 0
+Text GLabel 2600 4900 2    60   Output ~ 0
 MatrixOut2
 $Comp
 L power:GND #PWR036
 U 1 1 5D394875
-P 9450 5750
+P 1850 5900
 AR Path="/5D394875" Ref="#PWR036"  Part="1" 
 AR Path="/5CA0C552/5D394875" Ref="#PWR?"  Part="1" 
-F 0 "#PWR036" H 9450 5500 50  0001 C CNN
-F 1 "GND" H 9450 5600 50  0000 C CNN
-F 2 "" H 9450 5750 50  0001 C CNN
-F 3 "" H 9450 5750 50  0001 C CNN
-	1    9450 5750
+F 0 "#PWR036" H 1850 5650 50  0001 C CNN
+F 1 "GND" H 1850 5750 50  0000 C CNN
+F 2 "" H 1850 5900 50  0001 C CNN
+F 3 "" H 1850 5900 50  0001 C CNN
+	1    1850 5900
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector_Generic:Conn_02x05_Odd_Even J9
-U 1 1 5D7CBEEC
-P 7350 4950
-F 0 "J9" H 7400 5350 50  0000 C CNN
-F 1 "ADC" H 7400 5250 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_2x05_P2.54mm_Vertical" H 7350 3750 50  0001 C CNN
-F 3 "" H 7350 3750 50  0001 C CNN
-	1    7350 4950
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	10400 5250 10450 5250
-$Comp
-L Device:D D1
-U 1 1 5D816E38
-P 10250 5250
-AR Path="/5D816E38" Ref="D1"  Part="1" 
-AR Path="/5CA0C552/5D816E38" Ref="D?"  Part="1" 
-F 0 "D1" H 10400 5300 50  0000 C CNN
-F 1 "1N4148" H 10250 5250 50  0001 C CNN
-F 2 "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal" H 10250 5250 50  0001 C CNN
-F 3 "" H 10250 5250 50  0001 C CNN
-	1    10250 5250
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	10050 5250 10100 5250
-Wire Wire Line
-	10450 5250 10450 5150
-Wire Wire Line
-	7650 4750 7750 4750
-NoConn ~ 10050 5350
-NoConn ~ 9550 5350
-NoConn ~ 9550 5250
+NoConn ~ 2450 5500
+NoConn ~ 1950 5500
+NoConn ~ 1950 5400
 $Comp
 L Connector_Generic:Conn_02x10_Odd_Even J10
 U 1 1 5CAB8678
-P 9750 5150
-F 0 "J10" H 9800 5750 50  0000 C CNN
-F 1 "EXT" H 9800 5650 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_2x10_P2.54mm_Vertical" H 9750 5150 50  0001 C CNN
-F 3 "~" H 9750 5150 50  0001 C CNN
-	1    9750 5150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3V3 #PWR035
-U 1 1 5D39486F
-P 10700 5550
-AR Path="/5D39486F" Ref="#PWR035"  Part="1" 
-AR Path="/5CA0C552/5D39486F" Ref="#PWR?"  Part="1" 
-F 0 "#PWR035" H 10700 5400 50  0001 C CNN
-F 1 "+3V3" H 10700 5690 50  0000 C CNN
-F 2 "" H 10700 5550 50  0001 C CNN
-F 3 "" H 10700 5550 50  0001 C CNN
-	1    10700 5550
+P 2150 5300
+F 0 "J10" H 2200 5900 50  0000 C CNN
+F 1 "EXT" H 2200 5800 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x10_P2.54mm_Vertical" H 2150 5300 50  0001 C CNN
+F 3 "~" H 2150 5300 50  0001 C CNN
+	1    2150 5300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9550 5650 9450 5650
+	1950 5800 1850 5800
 Wire Wire Line
-	9450 5650 9450 5750
-Wire Wire Line
-	10050 5650 10700 5650
-Wire Wire Line
-	10700 5650 10700 5550
-Wire Wire Line
-	10050 5150 10450 5150
-NoConn ~ 10050 5050
-NoConn ~ 10050 4950
-NoConn ~ 10050 4850
-NoConn ~ 9550 4950
-NoConn ~ 9550 5050
-NoConn ~ 9550 5150
-NoConn ~ 9550 5450
-NoConn ~ 9550 5550
-NoConn ~ 10050 5550
-NoConn ~ 10050 5450
+	1850 5800 1850 5900
+NoConn ~ 1950 5600
+NoConn ~ 1950 5700
+NoConn ~ 2450 5600
 Wire Wire Line
 	2050 950  2050 850 
 Wire Wire Line
@@ -1522,4 +1396,164 @@ Wire Wire Line
 	2800 1200 2800 1600
 Wire Wire Line
 	2850 1300 2750 1300
+Wire Wire Line
+	1600 1850 1600 1950
+Wire Wire Line
+	1600 1950 1900 1950
+Connection ~ 1900 1950
+NoConn ~ 2450 5400
+Wire Wire Line
+	2450 5300 2550 5300
+Wire Wire Line
+	2450 5700 2550 5700
+Wire Wire Line
+	2450 5800 2950 5800
+$Comp
+L power:+3V3 #PWR035
+U 1 1 5D39486F
+P 2950 5750
+AR Path="/5D39486F" Ref="#PWR035"  Part="1" 
+AR Path="/5CA0C552/5D39486F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR035" H 2950 5600 50  0001 C CNN
+F 1 "+3V3" H 2950 5890 50  0000 C CNN
+F 2 "" H 2950 5750 50  0001 C CNN
+F 3 "" H 2950 5750 50  0001 C CNN
+	1    2950 5750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 5800 2950 5750
+Text GLabel 4550 4900 0    60   Input ~ 0
+ADC1
+Text GLabel 5250 4900 2    60   Input ~ 0
+ADC2
+Text GLabel 5250 5000 2    60   Input ~ 0
+ADC4
+Text GLabel 5250 5100 2    60   Input ~ 0
+ADC6
+Text GLabel 5250 5200 2    60   Input ~ 0
+ADC8
+Wire Wire Line
+	4550 4900 4650 4900
+Wire Wire Line
+	4650 5000 4550 5000
+Wire Wire Line
+	4550 5100 4650 5100
+Wire Wire Line
+	4650 5200 4550 5200
+Wire Wire Line
+	5150 5200 5250 5200
+Wire Wire Line
+	5250 5100 5150 5100
+Wire Wire Line
+	5150 5000 5250 5000
+$Comp
+L power:GNDA #PWR034
+U 1 1 5D93A27A
+P 4550 5450
+F 0 "#PWR034" H 4550 5200 50  0001 C CNN
+F 1 "GNDA" H 4550 5300 50  0000 C CNN
+F 2 "" H 4550 5450 50  0001 C CNN
+F 3 "" H 4550 5450 50  0001 C CNN
+	1    4550 5450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 5300 4550 5300
+Wire Wire Line
+	4550 5300 4550 5450
+Text GLabel 4550 5000 0    60   Input ~ 0
+ADC3
+Text GLabel 4550 5100 0    60   Input ~ 0
+ADC5
+Text GLabel 4550 5200 0    60   Input ~ 0
+ADC7
+$Comp
+L Connector_Generic:Conn_02x05_Odd_Even J9
+U 1 1 5D7CBEEC
+P 4850 5100
+F 0 "J9" H 4900 5500 50  0000 C CNN
+F 1 "ADC" H 4900 5400 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x05_P2.54mm_Vertical" H 4850 3900 50  0001 C CNN
+F 3 "" H 4850 3900 50  0001 C CNN
+	1    4850 5100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 4900 5250 4900
+$Comp
+L power:+3V3 #PWR033
+U 1 1 5D93A7BE
+P 5850 5250
+F 0 "#PWR033" H 5850 5100 50  0001 C CNN
+F 1 "+3V3" H 5850 5390 50  0000 C CNN
+F 2 "" H 5850 5250 50  0001 C CNN
+F 3 "" H 5850 5250 50  0001 C CNN
+	1    5850 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 5300 5850 5300
+Wire Wire Line
+	5850 5300 5850 5250
+NoConn ~ 1950 5100
+NoConn ~ 1950 5200
+NoConn ~ 1950 5300
+NoConn ~ 2450 5200
+NoConn ~ 2450 5100
+NoConn ~ 2450 5000
+Wire Wire Line
+	1150 1550 1150 2000
+Wire Wire Line
+	1150 2000 1500 2000
+Connection ~ 1500 2000
+Wire Wire Line
+	1500 2000 1500 2050
+Wire Wire Line
+	2550 5300 2550 5700
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 5CA785BB
+P 10200 6200
+F 0 "H1" H 10300 6249 50  0000 L CNN
+F 1 "MountingHole_Pad" H 10300 6158 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 10200 6200 50  0001 C CNN
+F 3 "~" H 10200 6200 50  0001 C CNN
+	1    10200 6200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 5CA78A66
+P 10200 6200
+F 0 "H2" H 10300 6249 50  0000 L CNN
+F 1 "MountingHole_Pad" H 10300 6158 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 10200 6200 50  0001 C CNN
+F 3 "~" H 10200 6200 50  0001 C CNN
+	1    10200 6200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H3
+U 1 1 5CA78AB4
+P 10200 6200
+F 0 "H3" H 10300 6249 50  0000 L CNN
+F 1 "MountingHole_Pad" H 10300 6158 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 10200 6200 50  0001 C CNN
+F 3 "~" H 10200 6200 50  0001 C CNN
+	1    10200 6200
+	1    0    0    -1  
+$EndComp
+Connection ~ 10200 6300
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 5CA78AE5
+P 10200 6200
+F 0 "H4" H 10300 6249 50  0000 L CNN
+F 1 "MountingHole_Pad" H 10300 6158 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad_Via" H 10200 6200 50  0001 C CNN
+F 3 "~" H 10200 6200 50  0001 C CNN
+	1    10200 6200
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

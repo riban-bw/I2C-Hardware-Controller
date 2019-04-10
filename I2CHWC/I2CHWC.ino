@@ -13,19 +13,20 @@
 
 // ***Adjust these values to suit hardware installation***
 #define ADC_MUX         8  // Set quantity of ADC multiplexers supported (maximum quantity of 4051 chips)
-#define POTS            64 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
-#define SWITCHES        60 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
+#define POTS            0 // Set quantity of end-stopped knobs and faders (0..MAX_POTS or 0..8 if USE_ADC_MUX==0)
+#define SWITCHES        50 // Set quantity of continuous rotary knobs (0..MAX_SWITCHES)
 #define ENCODERS        30 // Set quantity of on / off switches (0..MAX_ENCODERS)
 #define ADC_BITS        10 // Set analogue to digital conversion resolution (max 12 bits)
 #define ROT_THRESHOLD   10 // Threshold at which to change rotational scaling
-#define ROT_FAST_SCALE  10 // Factor to muliptly rotational change rate for fast scrolling
+#define ROT_FAST_SCALE  10 // Factor to multiply rotational change rate for fast scrolling
 #define DEBOUNCE_TIME   50 // Time in ms to ignore switch value change after previous change
 
 // Do not adjust these:
 #define MAX_POTS        64 // Maximum quantity of potentiometer controls
-#define MAX_SWITCHES    60 // Maximum quantity of on / off switch controls
+#define MAX_SWITCHES    50 // Maximum quantity of on / off switch controls
 #define MAX_ENCODERS    30 // Maximum quantity of rotary encoder controls
 #define CONFIG_OFFSET   114 // Base GPI input for system configuration
+#define COMMAND_HEADER  255 // Value of I2C command message header
 /*  Bits    | Use
     0-5     | I2C address (offset by 8, i.e. range is 0x08 - 0x47 (8 - 71))
       6     | ADC MUX board installed (use ADC MUX)
@@ -51,7 +52,6 @@ static const uint8_t ENCODER_START = MAX_POTS + MAX_SWITCHES; // Offset of rotar
 static const uint8_t MAX_CONTROLLERS = ENCODER_START + MAX_ENCODERS; // Maximum quantity of controllers
 
 /** Controller types
-*   @todo   Controller type is not used
 */
 enum CONTROLLER_TYPE
 {
@@ -236,9 +236,9 @@ void readEncoder()
                     g_anControllers[ENCODER_START + nEncoder].count <<= 4;
                     g_anControllers[ENCODER_START + nEncoder].count |= g_anControllers[ENCODER_START + nEncoder].code;
                     if(g_anControllers[ENCODER_START + nEncoder].count == 0xd4)
-                        nDir = -1;
-                    else if(g_anControllers[ENCODER_START + nEncoder].count == 0x17)
                         nDir = +1;
+                    else if(g_anControllers[ENCODER_START + nEncoder].count == 0x17)
+                        nDir = -1;
                     if(nDir)
                     {
                         uint32_t lNow = millis();
@@ -331,8 +331,14 @@ void onI2Creceive(int nBytes)
 {
     if(nBytes < 0)
         return;
-    g_nI2Cregister = Wire.read();
-    g_nLastRead = g_nI2Cregister;
+    int nValue = Wire.read();
+    if(nValue == COMMAND_HEADER && bBytes > 1)
+    {
+        //!@todo Handle I2C command messages
+    }
+    else
+        g_nI2Cregister = nValue;
+    g_nLastRead = g_nI2Cregister; // Store last read register to allow getDirty() to find next dirty register
     while(Wire.available())
-        Wire.read(); // Clear buffer as only expecting single byte
+        Wire.read(); // Clear buffer of unexpected bytes
 }
