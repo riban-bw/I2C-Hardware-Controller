@@ -1,7 +1,7 @@
 # I2C-Hardware-Controller
 A hardware controller providing rotary encoders, switches and potentiometers, interfacing with a host / master device via I2C 2-wire serial link and interrupt pin.
 
-I2C Hardware Controller provides an interface to other applications via 30 continuous rotary encoders, 60 on / off switches and 64 end-stopped variable resistors (potentiometers). The link to the host device is via I2C which requires a clock and data signal. Power may be provided by the host as 3.3V or 5V and ground. (Both devices must have a common ground.) The host may continuously poll the hardware controller (HWC) for changes or use a dedicated GPI signal to trigger interrupts (or similar event handling routine). Several HWC may be cascaded to increase the quantity of controls as required sharing I2C bus but each with own individual interrupt GPI.
+I2C Hardware Controller provides an interface to other applications via 30 continuous rotary encoders, 50 on / off switches and 64 end-stopped variable resistors (potentiometers). The link to the host device is via I2C which requires a clock and data signal. Power may be provided by the host as 3.3V or 5V and ground. (Both devices must have a common ground.) The host may continuously poll the hardware controller (HWC) for changes or use a dedicated GPI signal to trigger interrupts (or similar event handling routine). Several HWC may be cascaded to increase the quantity of controls as required sharing I2C bus but each with ts own individual interrupt GPI.
 
 Rotary encoders provide the value of change since last read which is a positive integer for clockwise rotation and negative for counter-clockwise rotation. Slow rotation changes value by one unit whilst faster rotation changes value by ten units. It is the responsibility of the host device / application to store the absolute value calculated from the relative position values sent by the HWC. 
 
@@ -50,10 +50,10 @@ Data value for rotary encoders is -1 for single counter-clockwise rotation deten
 
 The HWC has 154 registers, one for each possible control. Unpopulated controls will return a zero value.
 
-Register | Use
--------- | ---
-0        | Index of next control that has changed
-1 - 64   | Potentiometers 1 - 64
-65 - 124 | Switches 1 - 60
-125 - 154 | Encoders 1 - 30
+Register | Use | Range
+-------- | --- | -----
+0        | Index of next control that has changed | 0 - 144 (0 for no change)
+1 - 64   | Potentiometers 1 - 64 | 0 - 4096
+65 - 114 | Switches 1 - 50 | 0 - 1
+115 - 144 | Encoders 1 - 30 | -32768 - 32767
 
