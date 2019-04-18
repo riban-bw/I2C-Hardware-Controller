@@ -26,12 +26,14 @@
 #define MAX_SWITCHES    50 // Maximum quantity of on / off switch controls
 #define MAX_ENCODERS    30 // Maximum quantity of rotary encoder controls
 #define CONFIG_OFFSET   114 // Base GPI input for system configuration
-#define COMMAND_HEADER  255 // Value of I2C command message header
 /*  Bits    | Use
     0-5     | I2C address (offset by 8, i.e. range is 0x08 - 0x47 (8 - 71))
       6     | ADC MUX board installed (use ADC MUX)
     7-9     | Spare
 */
+#define COMMAND_HEADER  0 // Value of I2C command message header
+#define CMD_RESET       0   // Reset command
+
 
 //  STM32 GPI15 = I2C SDA, GPI16 = I2 CLK, USB D+ = 23, USB D- = 24
 
@@ -292,6 +294,19 @@ uint8_t getDirty()
     return 0;
 }
 
+/** @brief  Reset all controller values
+ *  @todo   Should we set values to current readings?
+ */
+void reset()
+{
+    for(uint8_t i = 0; i < MAX_CONTROLLERS; ++i)
+    {
+        g_anControllers[i].value = 0;
+        g_anControllers[i].dirty = false;
+    }
+    digitalWrite(InterruptPin, HIGH);
+}
+
 /** @brief  Sends controller 16-bit value to I2C master
  *  @param  controller Controller index (one based)
  */
@@ -329,16 +344,25 @@ void onI2Crequest()
  */
 void onI2Creceive(int nBytes)
 {
-    if(nBytes < 0)
+    if(nBytes < 1)
         return;
     int nValue = Wire.read();
-    if(nValue == COMMAND_HEADER && bBytes > 1)
+    if(nValue == COMMAND_HEADER && nBytes > 1)
     {
-        //!@todo Handle I2C command messages
+        nValue = Wire.read();
+        switch(nValue)
+        {
+            case CMD_RESET:
+                reset();
+                break;
+        }
     }
     else
+    {
         g_nI2Cregister = nValue;
-    g_nLastRead = g_nI2Cregister; // Store last read register to allow getDirty() to find next dirty register
+        g_nLastRead = g_nI2Cregister; // Store last read register to allow getDirty() to find next dirty register
+    }
     while(Wire.available())
         Wire.read(); // Clear buffer of unexpected bytes
 }
+
