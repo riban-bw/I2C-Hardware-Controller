@@ -57,3 +57,8 @@ Register | Use | Range
 65 - 114 | Switches 1 - 50 | 0 - 1
 115 - 144 | Encoders 1 - 30 | -32768 - 32767
 
+It is possible to write a command to register 0.
+
+Command ID | Command | Parameters
+-|-|-
+0 | Reset | Resets all values to zero and clears dirty flags (and hence interrupt)
