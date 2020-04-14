@@ -33,7 +33,7 @@ The INT pin is held high under normal condition and goes low (0V) when there has
 
 # I2C Signal Flow
 
-The I2C master may request the value of any control by sending the control number (1...154) as a single byte message then reading a 16-bit (two byte) response. If the I2C master sends a request for controller zero, the next I2C read will return the index of the first controller with a value that has changed since its last read. Pseudo code may look like:
+The I2C master may request the value of any control by sending the control number (1...144) as a single byte message then reading a 16-bit (two byte) response. If the I2C master sends a request for controller zero, the next I2C read will return the index of the first controller with a value that has changed since its last read. Pseudo code may look like:
 
 ```
 while(GPI_INT == 0) {
