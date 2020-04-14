@@ -48,7 +48,7 @@ Data value for potentiometers is a positive integer range 0..(2^n - 1) where n=n
 Data value for switches is 0 for off (open) and 1 for on (closed).
 Data value for rotary encoders is -1 for single counter-clockwise rotation detent and +1 for single clockwise rotation detent. If rotated faster than queried by I2C master then the relative offset increases accordingly, e.g. if rotated clockwise by 4 detents since last query, the next query result will be +4. This value must be read as a 16-bit signed integer.
 
-The HWC has 154 registers, one for each possible control. Unpopulated controls will return a zero value.
+The HWC has 144 registers, one for each possible control. Unpopulated controls will return a zero value.
 
 Register | Use | Range
 -------- | --- | -----
